@@ -1,187 +1,310 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Therapist Clinic Operations Dashboard</title>
-<style>
-:root{
-  --bg:#f6f4ef;--card:#fffdf8;--line:#ded8cd;--text:#252525;--muted:#77716a;
-  --dark:#3a3835;--dark2:#565149;--accent:#b89b68;--accent2:#e8dcc7;
-  --green:#4f7d5c;--red:#a65a4f;--orange:#b8793d;--blue:#5b6f8f;
-}
-*{box-sizing:border-box}
-body{margin:0;font-family:Inter,Arial,sans-serif;background:var(--bg);color:var(--text)}
-header{background:linear-gradient(135deg,#36332f,#504b43);color:white;padding:18px 28px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:20;box-shadow:0 4px 18px rgba(0,0,0,.12)}
-h1{margin:0;color:#f2dfbc;font-size:23px}
-nav{display:flex;gap:8px;flex-wrap:wrap}
-nav button{background:rgba(255,255,255,.12);color:white;border:1px solid rgba(255,255,255,.12);border-radius:999px;padding:9px 13px;font-weight:700;cursor:pointer}
-nav button.active{background:#f2dfbc;color:#2a2825}
-main{max-width:1380px;margin:auto;padding:24px}.grid{display:grid;gap:16px}.kpis{grid-template-columns:repeat(5,1fr)}
-.card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:0 8px 24px rgba(75,68,57,.06);padding:20px}
-.kpi{border-left:5px solid var(--blue)}.green{border-left-color:var(--green)}.orange{border-left-color:var(--orange)}.red{border-left-color:var(--red)}
-.kpi small{font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:800;letter-spacing:.08em}.kpi .num{font-size:32px;font-weight:900;margin-top:8px;color:#36332f}
-h2{font-size:18px;margin:28px 0 12px}h3{font-size:16px;margin:0 0 12px}
-input,select,textarea{width:100%;border:1px solid #cfc7bb;border-radius:12px;padding:11px 12px;background:white;font:inherit;color:var(--text)}
-input:focus,select:focus,textarea:focus{outline:3px solid var(--accent2);border-color:var(--accent)}textarea{min-height:90px}
-button{border:0;border-radius:12px;padding:10px 14px;background:var(--dark);color:white;font-weight:700;cursor:pointer}button:hover{opacity:.92}
-button.gold{background:var(--accent)}button.red{background:var(--red)}button.gray{background:var(--dark2)}button.greenBtn{background:var(--green)}button.small{font-size:12px;padding:6px 9px;border-radius:9px}
-.form{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:10px}.controls{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:14px}
-.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:18px;background:white;box-shadow:0 8px 24px rgba(75,68,57,.05)}
-table{width:100%;border-collapse:collapse;min-width:1050px}th{background:#3f3b35;color:#f9f3e8;text-align:left;font-size:12px;padding:13px;position:sticky;top:0}td{border-bottom:1px solid #ece7dd;padding:11px;font-size:13px;vertical-align:top}tr:hover td{background:#faf7f1}
-.hidden{display:none}.note{font-size:12px;color:var(--muted);line-height:1.65}.pill{display:inline-flex;gap:8px;align-items:center;background:#f1eee7;border:1px solid #ded8cd;border-radius:999px;padding:7px 10px;margin:4px;font-size:13px}.actions{display:flex;gap:6px;flex-wrap:wrap}
-.summary-grid{grid-template-columns:1fr 1fr}.bar{height:10px;background:#e8e2d7;border-radius:999px;overflow:hidden;margin-bottom:10px}.bar div{height:100%;background:var(--accent)}
-.alert{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:14px;padding:12px;margin:8px 0}.ok{background:#ecfdf5;border-color:#bbf7d0;color:#166534}
-.footer{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:28px}
-@media(max-width:980px){header{display:block}nav{margin-top:12px}.kpis,.form,.controls,.summary-grid{grid-template-columns:1fr}}
-</style>
+  <meta charset="UTF-8">
+  <title>Omnia Clinic Live Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body{margin:0;font-family:Arial;background:#f6f4ef;color:#252525}
+    header{background:#3a3835;color:white;padding:18px 28px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0}
+    h1{margin:0;color:#f2dfbc;font-size:24px}
+    nav{display:flex;gap:8px;flex-wrap:wrap}
+    nav button{border:0;border-radius:999px;padding:9px 14px;background:#565149;color:white;font-weight:bold;cursor:pointer}
+    nav button.active{background:#f2dfbc;color:#252525}
+    main{max-width:1250px;margin:auto;padding:24px}
+    .card{background:#fffdf8;border:1px solid #ded8cd;border-radius:18px;padding:20px;margin-bottom:16px;box-shadow:0 6px 20px rgba(0,0,0,.05)}
+    .grid{display:grid;gap:16px}
+    .kpis{grid-template-columns:repeat(5,1fr)}
+    .kpi{border-left:5px solid #b89b68}
+    .kpi small{color:#77716a;text-transform:uppercase;font-weight:bold;font-size:11px}
+    .num{font-size:32px;font-weight:900;margin-top:8px}
+    input,select{width:100%;padding:11px;border:1px solid #cfc7bb;border-radius:10px}
+    button{border:0;border-radius:10px;padding:10px 14px;background:#3a3835;color:white;font-weight:bold;cursor:pointer}
+    button.gold{background:#b89b68}
+    button.red{background:#a65a4f}
+    button.gray{background:#565149}
+    .form{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:10px}
+    .controls{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:14px}
+    .table-wrap{overflow:auto;background:white;border:1px solid #ded8cd;border-radius:16px}
+    table{width:100%;border-collapse:collapse;min-width:950px}
+    th{background:#3f3b35;color:#f9f3e8;text-align:left;font-size:12px;padding:12px}
+    td{border-bottom:1px solid #ece7dd;padding:10px;font-size:13px}
+    .hidden{display:none}
+    .status{padding:12px;border-radius:12px;background:#ecfdf5;color:#166534;border:1px solid #bbf7d0;margin-bottom:16px}
+    .error{background:#fef2f2;color:#991b1b;border-color:#fecaca}
+    .pill{display:inline-block;background:#f1eee7;border:1px solid #ded8cd;border-radius:999px;padding:6px 9px}
+    @media(max-width:900px){header{display:block}.kpis,.form,.controls{grid-template-columns:1fr}nav{margin-top:12px}}
+  </style>
 </head>
 <body>
 <header>
-  <div><h1>Therapist Clinic Operations Dashboard</h1></div>
+  <h1>Omnia Clinic Live Dashboard</h1>
   <nav>
-    <button class="active" onclick="showTab('dashboard',this)">📊 Dashboard</button>
-    <button onclick="showTab('appointments',this)">📅 Appointments</button>
-    <button onclick="showTab('search',this)">🔎 Search</button>
-    <button onclick="showTab('customers',this)">🙋 Customers</button>
-    <button onclick="showTab('stock',this)">📦 Stock</button>
-    <button onclick="showTab('packages',this)">🎟️ Packages</button>
-    <button onclick="showTab('performance',this)">🏆 Performance</button>
-    <button onclick="showTab('finance',this)">💰 Costing</button>
-    <button onclick="showTab('followups',this)">📲 Follow Ups</button>
-    <button onclick="showTab('settings',this)">⚙️ Settings</button>
+    <button class="active" onclick="showTab('dashboard',this)">Dashboard</button>
+    <button onclick="showTab('appointments',this)">Appointments</button>
+    <button onclick="showTab('search',this)">Search</button>
+    <button onclick="showTab('customers',this)">Customers</button>
   </nav>
 </header>
 
 <main>
+<div id="connectionStatus" class="status">Connecting to Supabase...</div>
+
 <section id="dashboard" class="tab">
-<div class="card" style="margin-bottom:16px">
-  <h3>Therapist Instructions</h3>
-  <div class="note" style="font-size:13px;line-height:1.8">
-    1. Add every customer visit under <b>Appointments</b>.<br>
-    2. Select customer, therapist, product used, quantity, revenue, and notes.<br>
-    3. Use <b>Search</b> to find who used BZ, when, under which therapist, and total usage.<br>
-    4. Use <b>Stock</b> to monitor product balance and low stock warnings.<br>
-    5. Use <b>Packages</b> to track sessions purchased, used, balance, and expiry.<br>
-    6. Use <b>Follow Ups</b> to see customers who have not returned recently.<br>
-    7. Click <b>Export Backup</b> weekly so data can be restored if needed.
+  <div class="card">
+    <h3>Therapist Instructions</h3>
+    <p>Add every visit under Appointments. This version saves to Supabase cloud so everyone using the same link can see the same appointment records.</p>
   </div>
-</div>
-<div class="grid kpis">
-  <div class="card kpi"><small>Appointments</small><div class="num" id="kpiA">0</div></div>
-  <div class="card kpi green"><small>Revenue</small><div class="num" id="kpiR">$0</div></div>
-  <div class="card kpi orange"><small>Product Cost</small><div class="num" id="kpiCost">$0</div></div>
-  <div class="card kpi red"><small>Follow Ups Due</small><div class="num" id="kpiF">0</div></div>
-  <div class="card kpi"><small>Customers</small><div class="num" id="kpiC">0</div></div>
-</div>
-<h2>Alerts</h2><div id="alerts"></div>
-<h2>Filter Dashboard</h2>
-<div class="controls"><select id="dashTherapist" onchange="renderAll()"></select><select id="dashProduct" onchange="renderAll()"></select><input id="dashCustomer" oninput="renderAll()" placeholder="Search customer"><input id="dashFrom" type="date" onchange="renderAll()"><input id="dashTo" type="date" onchange="renderAll()"><button class="gray" onclick="clearDash()">Clear</button></div>
-<div class="grid summary-grid"><div class="card"><h3>Product Usage Summary</h3><div id="productSummary"></div></div><div class="card"><h3>Therapist Revenue Summary</h3><div id="therapistSummary"></div></div></div>
-<h2>Filtered Records</h2><div class="table-wrap"><table><thead><tr><th>Date</th><th>Customer</th><th>Therapist</th><th>Product</th><th>Qty</th><th>Boxes</th><th>Revenue</th><th>Notes</th></tr></thead><tbody id="dashRows"></tbody></table></div>
+
+  <div class="grid kpis">
+    <div class="card kpi"><small>Appointments</small><div class="num" id="kpiA">0</div></div>
+    <div class="card kpi"><small>Total Usage</small><div class="num" id="kpiU">0</div></div>
+    <div class="card kpi"><small>Boxes Used</small><div class="num" id="kpiB">0</div></div>
+    <div class="card kpi"><small>Customers</small><div class="num" id="kpiC">0</div></div>
+    <div class="card kpi"><small>Revenue</small><div class="num" id="kpiR">$0</div></div>
+  </div>
+
+  <h2>Filter Dashboard</h2>
+  <div class="controls">
+    <select id="dashTherapist" onchange="renderAll()"></select>
+    <select id="dashProduct" onchange="renderAll()"></select>
+    <input id="dashCustomer" oninput="renderAll()" placeholder="Search customer">
+    <input id="dashFrom" type="date" onchange="renderAll()">
+    <input id="dashTo" type="date" onchange="renderAll()">
+    <button class="gray" onclick="clearDash()">Clear</button>
+  </div>
+
+  <h2>Appointment Records</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Date</th><th>Customer</th><th>Therapist</th><th>Product</th><th>Qty</th><th>Boxes</th><th>Revenue</th><th>Notes</th></tr></thead>
+      <tbody id="dashRows"></tbody>
+    </table>
+  </div>
 </section>
 
 <section id="appointments" class="tab hidden">
-<div class="card"><h3>Add Appointment Usage</h3>
-<div class="form"><input id="aDate" type="date"><select id="aCustomer"></select><select id="aTherapist"></select><select id="aProduct"></select><input id="aQty" type="number" step="0.01" placeholder="Qty used"></div>
-<div class="form"><input id="aBoxes" type="number" step="0.01" placeholder="Boxes"><input id="aRevenue" type="number" step="0.01" placeholder="Revenue $"><input id="aBefore" placeholder="Before photo link"><input id="aAfter" placeholder="After photo link"><input id="aNotes" placeholder="Treatment notes"></div>
-<button class="gold" onclick="addAppointment()">+ Add Record</button></div>
-<h2>All Appointment Records</h2><div class="table-wrap"><table><thead><tr><th>Date</th><th>Customer</th><th>Therapist</th><th>Product</th><th>Qty</th><th>Boxes</th><th>Revenue</th><th>Photos</th><th>Notes</th><th>Actions</th></tr></thead><tbody id="apptRows"></tbody></table></div>
+  <div class="card">
+    <h3>Add Appointment Usage</h3>
+    <div class="form">
+      <input id="aDate" type="date">
+      <input id="aCustomer" placeholder="Customer name">
+      <select id="aTherapist"></select>
+      <select id="aProduct"></select>
+      <input id="aQty" type="number" step="0.01" placeholder="Qty used">
+    </div>
+    <div class="form">
+      <input id="aBoxes" type="number" step="0.01" placeholder="Boxes">
+      <input id="aRevenue" type="number" step="0.01" placeholder="Revenue $">
+      <input id="aBefore" placeholder="Before photo link">
+      <input id="aAfter" placeholder="After photo link">
+      <input id="aNotes" placeholder="Notes">
+    </div>
+    <button class="gold" onclick="addAppointment()">+ Add Cloud Record</button>
+  </div>
+
+  <h2>All Appointment Records</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Date</th><th>Customer</th><th>Therapist</th><th>Product</th><th>Qty</th><th>Boxes</th><th>Revenue</th><th>Photos</th><th>Notes</th><th>Actions</th></tr></thead>
+      <tbody id="apptRows"></tbody>
+    </table>
+  </div>
 </section>
 
 <section id="search" class="tab hidden">
-<div class="card"><h3>Search Any Product Usage</h3><p class="note">Example: choose BZ + Tracy to see total BZ used, customers who used it, and appointment dates.</p><div class="controls"><select id="sTherapist" onchange="renderSearch()"></select><select id="sProduct" onchange="renderSearch()"></select><input id="sCustomer" oninput="renderSearch()" placeholder="Customer optional"><input id="sFrom" type="date" onchange="renderSearch()"><input id="sTo" type="date" onchange="renderSearch()"><button class="gray" onclick="clearSearch()">Clear</button></div></div>
-<div class="grid kpis" style="margin-top:16px"><div class="card kpi green"><small>Total Qty Used</small><div class="num" id="sTotal">0</div></div><div class="card kpi orange"><small>Total Boxes</small><div class="num" id="sBoxes">0</div></div><div class="card kpi"><small>Appointments</small><div class="num" id="sCount">0</div></div><div class="card kpi red"><small>Customers</small><div class="num" id="sCust">0</div></div><div class="card kpi"><small>Revenue</small><div class="num" id="sRev">$0</div></div></div>
-<h2>Search Results</h2><div class="table-wrap"><table><thead><tr><th>Date</th><th>Customer</th><th>Therapist</th><th>Product</th><th>Qty</th><th>Boxes</th><th>Revenue</th><th>Notes</th></tr></thead><tbody id="searchRows"></tbody></table></div>
+  <div class="card">
+    <h3>Search Product Usage</h3>
+    <div class="controls">
+      <select id="sTherapist" onchange="renderSearch()"></select>
+      <select id="sProduct" onchange="renderSearch()"></select>
+      <input id="sCustomer" oninput="renderSearch()" placeholder="Customer optional">
+      <input id="sFrom" type="date" onchange="renderSearch()">
+      <input id="sTo" type="date" onchange="renderSearch()">
+      <button class="gray" onclick="clearSearch()">Clear</button>
+    </div>
+  </div>
+
+  <div class="grid kpis">
+    <div class="card kpi"><small>Total Qty</small><div class="num" id="sTotal">0</div></div>
+    <div class="card kpi"><small>Boxes</small><div class="num" id="sBoxes">0</div></div>
+    <div class="card kpi"><small>Records</small><div class="num" id="sCount">0</div></div>
+    <div class="card kpi"><small>Customers</small><div class="num" id="sCust">0</div></div>
+    <div class="card kpi"><small>Revenue</small><div class="num" id="sRev">$0</div></div>
+  </div>
+
+  <h2>Search Results</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Date</th><th>Customer</th><th>Therapist</th><th>Product</th><th>Qty</th><th>Boxes</th><th>Revenue</th><th>Notes</th></tr></thead>
+      <tbody id="searchRows"></tbody>
+    </table>
+  </div>
 </section>
 
 <section id="customers" class="tab hidden">
-<div class="card"><h3>Add Customer Profile</h3><p class="note">Track allergies, skin history, package balance, and before/after links.</p><div class="form"><input id="customerName" placeholder="Customer name"><input id="customerPhone" placeholder="Phone"><input id="customerAllergy" placeholder="Allergies"><input id="customerCondition" placeholder="Skin condition / history"><button class="gold" onclick="addCustomer()">+ Add Customer</button></div></div>
-<h2>Customer Profiles</h2><div class="table-wrap"><table><thead><tr><th>Customer</th><th>Phone</th><th>Allergies</th><th>Condition / Notes</th><th>Last Visit</th><th>Products Used</th><th>Actions</th></tr></thead><tbody id="customerRows"></tbody></table></div>
+  <div class="card">
+    <h3>Customer Summary</h3>
+    <p>Customers are automatically shown from appointment records.</p>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Customer</th><th>Last Visit</th><th>Total Visits</th><th>Products Used</th><th>Total Revenue</th></tr></thead>
+      <tbody id="customerRows"></tbody>
+    </table>
+  </div>
 </section>
-
-<section id="stock" class="tab hidden">
-<div class="card"><h3>Add / Update Product Stock</h3><div class="form"><input id="productCode" placeholder="Product code, e.g. BZ"><input id="productName" placeholder="Product name"><input id="productCost" type="number" step="0.01" placeholder="Cost per qty"><input id="productStock" type="number" step="0.01" placeholder="Current stock"><input id="productLow" type="number" step="0.01" placeholder="Low stock alert"></div><button class="gold" onclick="addProduct()">+ Save Product</button></div>
-<h2>Stock Management</h2><div class="table-wrap"><table><thead><tr><th>Product</th><th>Name</th><th>Cost / Qty</th><th>Starting Stock</th><th>Used</th><th>Balance</th><th>Low Alert</th><th>Status</th><th>Actions</th></tr></thead><tbody id="stockRows"></tbody></table></div>
-</section>
-
-<section id="packages" class="tab hidden">
-<div class="card"><h3>Add Customer Package</h3><div class="form"><select id="pkgCustomer"></select><input id="pkgName" placeholder="Package name"><input id="pkgTotal" type="number" placeholder="Total sessions"><input id="pkgUsed" type="number" placeholder="Used sessions"><input id="pkgExpiry" type="date"></div><button class="gold" onclick="addPackage()">+ Add Package</button></div>
-<h2>Package Balances</h2><div class="table-wrap"><table><thead><tr><th>Customer</th><th>Package</th><th>Total</th><th>Used</th><th>Balance</th><th>Expiry</th><th>Status</th><th>Actions</th></tr></thead><tbody id="packageRows"></tbody></table></div>
-</section>
-
-<section id="performance" class="tab hidden">
-<h2>Therapist Performance</h2><div class="table-wrap"><table><thead><tr><th>Therapist</th><th>Appointments</th><th>Unique Customers</th><th>Total Revenue</th><th>Product Qty Used</th><th>Avg Revenue / Visit</th><th>Suggested Insight</th></tr></thead><tbody id="performanceRows"></tbody></table></div>
-</section>
-
-<section id="finance" class="tab hidden">
-<h2>Product Costing & Profit</h2><div class="table-wrap"><table><thead><tr><th>Product</th><th>Qty Used</th><th>Revenue Linked</th><th>Estimated Product Cost</th><th>Estimated Gross Profit</th><th>Margin</th></tr></thead><tbody id="financeRows"></tbody></table></div>
-</section>
-
-<section id="followups" class="tab hidden">
-<div class="card"><h3>Follow Up Settings</h3><div class="form"><input id="followDays" type="number" value="45" placeholder="Follow up after X days"><button class="gold" onclick="renderAll()">Update</button></div></div>
-<h2>Customers Due For Follow Up</h2><div class="table-wrap"><table><thead><tr><th>Customer</th><th>Phone</th><th>Last Visit</th><th>Days Since Last Visit</th><th>Last Therapist</th><th>Last Product</th><th>WhatsApp</th></tr></thead><tbody id="followRows"></tbody></table></div>
-</section>
-
-<section id="settings" class="tab hidden">
-<div class="card"><h3>Therapists</h3><div class="form"><input id="therapistName" placeholder="Therapist name"><input id="therapistRole" placeholder="Role / branch"><button class="gold" onclick="addTherapist()">+ Add Therapist</button></div><div id="therapistList"></div></div>
-<br>
-<div class="card"><h3>Daily Closing Report</h3><p class="note">Choose a date and generate a quick daily closing summary.</p><div class="form"><input id="closingDate" type="date"><button class="greenBtn" onclick="dailyClosing()">Generate Report</button></div><textarea id="closingReport" placeholder="Daily report appears here..."></textarea></div>
-</section>
-
-<div class="footer"><button class="gray" onclick="exportData()">Export Backup</button><button class="gray" onclick="document.getElementById('importFile').click()">Import Backup</button><input type="file" id="importFile" accept="application/json" style="display:none" onchange="importData(event)"><button class="red" onclick="resetAll()">Reset Dashboard</button></div>
 </main>
 
 <script>
-const KEY="clinic_ops_dashboard_full_v1";
-const starter={
-therapists:[{name:"Tracy",role:"Therapist"},{name:"Zoey",role:"Therapist"},{name:"Lynn",role:"Therapist"},{name:"Jauz",role:"Therapist"},{name:"Liz",role:"Therapist"},{name:"Peggy",role:"Therapist"},{name:"Nicole L",role:"Therapist"},{name:"Carra",role:"Therapist"}],
-customers:[{name:"Philip",phone:"",allergy:"",condition:""},{name:"Wilson",phone:"",allergy:"",condition:""},{name:"Jamie",phone:"",allergy:"",condition:""},{name:"Angie",phone:"",allergy:"",condition:""},{name:"Janice",phone:"",allergy:"",condition:""}],
-products:[{code:"VL",name:"",cost:0,stock:77,low:20},{code:"TS",name:"",cost:0,stock:48,low:10},{code:"QZ",name:"",cost:0,stock:10,low:3},{code:"ZF",name:"",cost:0,stock:88,low:20},{code:"JY",name:"",cost:0,stock:23,low:8},{code:"JH",name:"",cost:0,stock:200,low:30},{code:"GG",name:"",cost:0,stock:0,low:0},{code:"FG",name:"",cost:0,stock:0,low:0},{code:"BZ",name:"",cost:0,stock:0,low:0}],
-appointments:[{date:"2025-10-02",customer:"Philip",therapist:"Jauz",product:"ZF",qty:1,boxes:1,revenue:0,before:"",after:"",notes:""},{date:"2025-10-26",customer:"Wilson",therapist:"Jauz",product:"JY",qty:4,boxes:4,revenue:0,before:"",after:"",notes:""},{date:"2025-10-27",customer:"Jamie",therapist:"Jauz",product:"ZF",qty:5,boxes:5,revenue:0,before:"",after:"",notes:""},{date:"2025-10-28",customer:"Angie",therapist:"Jauz",product:"QZ",qty:1,boxes:1,revenue:0,before:"",after:"",notes:""}],
-packages:[]
-};
-let data=JSON.parse(localStorage.getItem(KEY)||"null")||starter;
-function save(){localStorage.setItem(KEY,JSON.stringify(data))}
-function showTab(id,btn){document.querySelectorAll(".tab").forEach(t=>t.classList.add("hidden"));document.getElementById(id).classList.remove("hidden");document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));btn.classList.add("active");renderAll()}
-function money(n){return "$"+Number(n||0).toLocaleString(undefined,{maximumFractionDigits:2})}
-function sum(list,key){return Math.round(list.reduce((s,a)=>s+Number(a[key]||0),0)*100)/100}
-function usedProduct(code){return sum(data.appointments.filter(a=>a.product===code),"qty")}
-function product(code){return data.products.find(p=>p.code===code)||{cost:0,stock:0,low:0}}
-function opt(arr,key,label,all){return (all?`<option value="">All</option>`:"")+arr.map(x=>`<option value="${x[key]}">${x[label]}</option>`).join("")}
-function fillSelects(){["dashTherapist","sTherapist"].forEach(id=>document.getElementById(id).innerHTML=opt(data.therapists,"name","name",true));["dashProduct","sProduct"].forEach(id=>document.getElementById(id).innerHTML=opt(data.products,"code","code",true));["aTherapist"].forEach(id=>document.getElementById(id).innerHTML=opt(data.therapists,"name","name",false));["aCustomer","pkgCustomer"].forEach(id=>document.getElementById(id).innerHTML=opt(data.customers,"name","name",false));["aProduct"].forEach(id=>document.getElementById(id).innerHTML=opt(data.products,"code","code",false))}
-function getFiltered(prefix){let th=document.getElementById(prefix+"Therapist")?.value||"",pr=document.getElementById(prefix+"Product")?.value||"",cu=(document.getElementById(prefix+"Customer")?.value||"").toLowerCase(),from=document.getElementById(prefix+"From")?.value||"",to=document.getElementById(prefix+"To")?.value||"";return data.appointments.filter(a=>(!th||a.therapist===th)&&(!pr||a.product===pr)&&(!cu||a.customer.toLowerCase().includes(cu))&&(!from||a.date>=from)&&(!to||a.date<=to))}
-function rows(list,actions=false){return list.map((a,i)=>`<tr><td>${a.date}</td><td><b>${a.customer}</b></td><td>${a.therapist}</td><td><span class="pill">${a.product}</span></td><td>${a.qty}</td><td>${a.boxes}</td><td>${money(a.revenue)}</td><td>${a.before?`<a href="${a.before}" target="_blank">Before</a> `:""}${a.after?`<a href="${a.after}" target="_blank">After</a>`:""}</td><td>${a.notes||""}</td>${actions?`<td><button class="small red" onclick="deleteAppointment(${i})">Delete</button></td>`:""}</tr>`).join("")}
-function renderAll(){save();fillSelects();renderDashboard();renderAppointments();renderSearch();renderCustomers();renderStock();renderPackages();renderPerformance();renderFinance();renderFollowups();renderSettings()}
-function renderDashboard(){let list=getFiltered("dash");let revenue=sum(list,"revenue"),cost=list.reduce((s,a)=>s+(Number(a.qty||0)*Number(product(a.product).cost||0)),0);document.getElementById("kpiA").textContent=list.length;document.getElementById("kpiR").textContent=money(revenue);document.getElementById("kpiCost").textContent=money(cost);document.getElementById("kpiC").textContent=new Set(list.map(a=>a.customer)).size;document.getElementById("dashRows").innerHTML=rows(list,false).replaceAll("<th>Photos</th>","");renderSummary(list,"productSummary","product","qty");renderSummary(list,"therapistSummary","therapist","revenue");renderAlerts();renderFollowups();document.getElementById("kpiF").textContent=document.querySelectorAll("#followRows tr").length}
-function renderAlerts(){let out=[];data.products.forEach(p=>{let bal=Number(p.stock||0)-usedProduct(p.code);if(Number(p.low||0)>0&&bal<=Number(p.low||0))out.push(`<div class="alert">⚠️ ${p.code} low stock. Balance: <b>${bal}</b>, alert level: ${p.low}</div>`)});if(!out.length)out.push(`<div class="alert ok">✅ No low stock alerts right now.</div>`);document.getElementById("alerts").innerHTML=out.join("")}
-function renderSummary(list,id,key,valueKey){let totals={};list.forEach(a=>totals[a[key]]=(totals[a[key]]||0)+Number(a[valueKey]||0));let max=Math.max(1,...Object.values(totals));document.getElementById(id).innerHTML=Object.keys(totals).map(k=>`<p><b>${k}</b> ${valueKey==="revenue"?money(totals[k]):totals[k]}</p><div class="bar"><div style="width:${totals[k]/max*100}%"></div></div>`).join("")||"<p class='note'>No records yet</p>"}
-function renderAppointments(){document.getElementById("apptRows").innerHTML=rows(data.appointments,true)}
-function renderSearch(){let list=getFiltered("s");document.getElementById("sTotal").textContent=sum(list,"qty");document.getElementById("sBoxes").textContent=sum(list,"boxes");document.getElementById("sCount").textContent=list.length;document.getElementById("sCust").textContent=new Set(list.map(a=>a.customer)).size;document.getElementById("sRev").textContent=money(sum(list,"revenue"));document.getElementById("searchRows").innerHTML=list.map(a=>`<tr><td>${a.date}</td><td><b>${a.customer}</b></td><td>${a.therapist}</td><td><span class="pill">${a.product}</span></td><td>${a.qty}</td><td>${a.boxes}</td><td>${money(a.revenue)}</td><td>${a.notes||""}</td></tr>`).join("")}
-function renderCustomers(){document.getElementById("customerRows").innerHTML=data.customers.map((c,i)=>{let visits=data.appointments.filter(a=>a.customer===c.name).sort((a,b)=>b.date.localeCompare(a.date));let last=visits[0];let products=[...new Set(visits.map(v=>v.product))].join(", ");return `<tr><td><b>${c.name}</b></td><td>${c.phone||""}</td><td>${c.allergy||""}</td><td>${c.condition||""}</td><td>${last?last.date:""}</td><td>${products}</td><td><button class="small red" onclick="deleteCustomer(${i})">Delete</button></td></tr>`}).join("")}
-function renderStock(){document.getElementById("stockRows").innerHTML=data.products.map((p,i)=>{let used=usedProduct(p.code),bal=Number(p.stock||0)-used,status=Number(p.low||0)>0&&bal<=Number(p.low||0)?"LOW":"OK";return `<tr><td><b>${p.code}</b></td><td>${p.name||""}</td><td>${money(p.cost)}</td><td>${p.stock}</td><td>${used}</td><td>${bal}</td><td>${p.low}</td><td><span class="pill">${status}</span></td><td><button class="small red" onclick="deleteProduct(${i})">Delete</button></td></tr>`}).join("")}
-function renderPackages(){let today=new Date().toISOString().slice(0,10);document.getElementById("packageRows").innerHTML=data.packages.map((p,i)=>{let bal=Number(p.total||0)-Number(p.used||0),status=p.expiry&&p.expiry<today?"Expired":bal<=0?"Fully Used":"Active";return `<tr><td><b>${p.customer}</b></td><td>${p.name}</td><td>${p.total}</td><td>${p.used}</td><td>${bal}</td><td>${p.expiry||""}</td><td>${status}</td><td><button class="small" onclick="usePackage(${i})">Use 1</button><button class="small red" onclick="deletePackage(${i})">Delete</button></td></tr>`}).join("")}
-function renderPerformance(){document.getElementById("performanceRows").innerHTML=data.therapists.map(t=>{let list=data.appointments.filter(a=>a.therapist===t.name),rev=sum(list,"revenue"),qty=sum(list,"qty"),cust=new Set(list.map(a=>a.customer)).size,avg=list.length?rev/list.length:0,insight=list.length===0?"No activity yet":rev>0?"Track repeat bookings and upsells":"Add revenue to see profitability";return `<tr><td><b>${t.name}</b></td><td>${list.length}</td><td>${cust}</td><td>${money(rev)}</td><td>${qty}</td><td>${money(avg)}</td><td>${insight}</td></tr>`}).join("")}
-function renderFinance(){document.getElementById("financeRows").innerHTML=data.products.map(p=>{let list=data.appointments.filter(a=>a.product===p.code),qty=sum(list,"qty"),rev=sum(list,"revenue"),cost=qty*Number(p.cost||0),profit=rev-cost,margin=rev?Math.round(profit/rev*100)+"%":"-";return `<tr><td><b>${p.code}</b></td><td>${qty}</td><td>${money(rev)}</td><td>${money(cost)}</td><td>${money(profit)}</td><td>${margin}</td></tr>`}).join("")}
-function renderFollowups(){let days=Number(document.getElementById("followDays")?.value||45),today=new Date(),rows=[];data.customers.forEach(c=>{let visits=data.appointments.filter(a=>a.customer===c.name).sort((a,b)=>b.date.localeCompare(a.date));if(!visits.length)return;let last=visits[0],diff=Math.floor((today-new Date(last.date))/(1000*60*60*24));if(diff>=days){let phone=(c.phone||"").replace(/\D/g,"");let msg=encodeURIComponent(`Hi ${c.name}, just checking in after your last appointment. Would you like to book your next session?`);let wa=phone?`<a href="https://wa.me/${phone}?text=${msg}" target="_blank">WhatsApp</a>`:"Add phone";rows.push(`<tr><td><b>${c.name}</b></td><td>${c.phone||""}</td><td>${last.date}</td><td>${diff}</td><td>${last.therapist}</td><td>${last.product}</td><td>${wa}</td></tr>`)}});document.getElementById("followRows").innerHTML=rows.join("")}
-function renderSettings(){document.getElementById("therapistList").innerHTML=data.therapists.map((x,i)=>`<span class="pill"><b>${x.name}</b> ${x.role||""} <button class="small red" onclick="data.therapists.splice(${i},1);renderAll()">x</button></span>`).join("")}
-function addAppointment(){let o={date:aDate.value,customer:aCustomer.value,therapist:aTherapist.value,product:aProduct.value,qty:Number(aQty.value||0),boxes:Number(aBoxes.value||0),revenue:Number(aRevenue.value||0),before:aBefore.value,after:aAfter.value,notes:aNotes.value};if(!o.date||!o.customer||!o.therapist||!o.product)return alert("Fill date, customer, therapist and product");data.appointments.push(o);["aDate","aQty","aBoxes","aRevenue","aBefore","aAfter","aNotes"].forEach(id=>document.getElementById(id).value="");renderAll()}
-function deleteAppointment(i){data.appointments.splice(i,1);renderAll()}
-function addCustomer(){if(!customerName.value.trim())return;data.customers.push({name:customerName.value.trim(),phone:customerPhone.value.trim(),allergy:customerAllergy.value.trim(),condition:customerCondition.value.trim()});["customerName","customerPhone","customerAllergy","customerCondition"].forEach(id=>document.getElementById(id).value="");renderAll()}
-function deleteCustomer(i){data.customers.splice(i,1);renderAll()}
-function addProduct(){let code=productCode.value.trim().toUpperCase();if(!code)return;let existing=data.products.find(p=>p.code===code);let obj={code,name:productName.value.trim(),cost:Number(productCost.value||0),stock:Number(productStock.value||0),low:Number(productLow.value||0)};if(existing)Object.assign(existing,obj);else data.products.push(obj);["productCode","productName","productCost","productStock","productLow"].forEach(id=>document.getElementById(id).value="");renderAll()}
-function deleteProduct(i){data.products.splice(i,1);renderAll()}
-function addPackage(){data.packages.push({customer:pkgCustomer.value,name:pkgName.value,total:Number(pkgTotal.value||0),used:Number(pkgUsed.value||0),expiry:pkgExpiry.value});["pkgName","pkgTotal","pkgUsed","pkgExpiry"].forEach(id=>document.getElementById(id).value="");renderAll()}
-function usePackage(i){data.packages[i].used=Number(data.packages[i].used||0)+1;renderAll()}
-function deletePackage(i){data.packages.splice(i,1);renderAll()}
-function addTherapist(){if(!therapistName.value.trim())return;data.therapists.push({name:therapistName.value.trim(),role:therapistRole.value.trim()});therapistName.value=therapistRole.value="";renderAll()}
-function clearDash(){["dashTherapist","dashProduct","dashCustomer","dashFrom","dashTo"].forEach(id=>document.getElementById(id).value="");renderAll()}
-function clearSearch(){["sTherapist","sProduct","sCustomer","sFrom","sTo"].forEach(id=>document.getElementById(id).value="");renderSearch()}
-function dailyClosing(){let d=closingDate.value;if(!d)return alert("Choose date");let list=data.appointments.filter(a=>a.date===d);let report=`Daily Closing Report ${d}\n\nAppointments: ${list.length}\nRevenue: ${money(sum(list,"revenue"))}\nProduct Qty Used: ${sum(list,"qty")}\nBoxes Used: ${sum(list,"boxes")}\nCustomers: ${[...new Set(list.map(a=>a.customer))].join(", ")}\nTherapists: ${[...new Set(list.map(a=>a.therapist))].join(", ")}\n\nRecords:\n`+list.map(a=>`- ${a.customer} | ${a.therapist} | ${a.product} x ${a.qty} | ${money(a.revenue)}`).join("\n");closingReport.value=report}
-function exportData(){let blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});let a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="clinic-operations-dashboard-backup.json";a.click()}
-function importData(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=x=>{data=JSON.parse(x.target.result);renderAll();alert("Imported")};r.readAsText(f)}
-function resetAll(){if(confirm("Reset dashboard?")){data=JSON.parse(JSON.stringify(starter));renderAll()}}
-renderAll();
+const SUPABASE_URL = "https://hwgiekzckeiwiepncsnc.supabase.co";
+const SUPABASE_KEY = "sb_publishable_HuyN-BgMe00i-91Qq5QZrw_ZIkYJuUN";
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let appointments = [];
+let therapists = ["Tracy","Zoey","Lynn","Jauz","Liz","Peggy","Nicole L","Carra"];
+let products = ["VL","TS","QZ","ZF","JY","JH","GG","FG","BZ"];
+
+function money(n){ return "$" + Number(n || 0).toLocaleString(undefined,{maximumFractionDigits:2}); }
+function sum(list,key){ return Math.round(list.reduce((s,a)=>s+Number(a[key]||0),0)*100)/100; }
+
+function showTab(id,btn){
+  document.querySelectorAll(".tab").forEach(t=>t.classList.add("hidden"));
+  document.getElementById(id).classList.remove("hidden");
+  document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+  renderAll();
+}
+
+function fillSelects(){
+  const therapistOptions = '<option value="">All</option>' + therapists.map(t=>`<option>${t}</option>`).join("");
+  const productOptions = '<option value="">All</option>' + products.map(p=>`<option>${p}</option>`).join("");
+  document.getElementById("dashTherapist").innerHTML = therapistOptions;
+  document.getElementById("sTherapist").innerHTML = therapistOptions;
+  document.getElementById("dashProduct").innerHTML = productOptions;
+  document.getElementById("sProduct").innerHTML = productOptions;
+  document.getElementById("aTherapist").innerHTML = therapists.map(t=>`<option>${t}</option>`).join("");
+  document.getElementById("aProduct").innerHTML = products.map(p=>`<option>${p}</option>`).join("");
+}
+
+function getFiltered(prefix){
+  let th=document.getElementById(prefix+"Therapist")?.value||"";
+  let pr=document.getElementById(prefix+"Product")?.value||"";
+  let cu=(document.getElementById(prefix+"Customer")?.value||"").toLowerCase();
+  let from=document.getElementById(prefix+"From")?.value||"";
+  let to=document.getElementById(prefix+"To")?.value||"";
+  return appointments.filter(a=>
+    (!th||a.therapist===th)&&(!pr||a.product===pr)&&
+    (!cu||String(a.customer||"").toLowerCase().includes(cu))&&
+    (!from||a.date>=from)&&(!to||a.date<=to)
+  );
+}
+
+function dashboardRows(list){
+  return list.map(a=>`<tr>
+    <td>${a.date||""}</td><td><b>${a.customer||""}</b></td><td>${a.therapist||""}</td>
+    <td><span class="pill">${a.product||""}</span></td><td>${a.qty||0}</td><td>${a.boxes||0}</td>
+    <td>${money(a.revenue)}</td><td>${a.notes||""}</td>
+  </tr>`).join("");
+}
+
+function appointmentRows(list){
+  return list.map(a=>`<tr>
+    <td>${a.date||""}</td><td><b>${a.customer||""}</b></td><td>${a.therapist||""}</td>
+    <td><span class="pill">${a.product||""}</span></td><td>${a.qty||0}</td><td>${a.boxes||0}</td>
+    <td>${money(a.revenue)}</td>
+    <td>${a.before_photo?`<a href="${a.before_photo}" target="_blank">Before</a>`:""} ${a.after_photo?`<a href="${a.after_photo}" target="_blank">After</a>`:""}</td>
+    <td>${a.notes||""}</td>
+    <td><button class="red" onclick="deleteAppointment(${a.id})">Delete</button></td>
+  </tr>`).join("");
+}
+
+function renderAll(){
+  const list = getFiltered("dash");
+  document.getElementById("kpiA").textContent = list.length;
+  document.getElementById("kpiU").textContent = sum(list,"qty");
+  document.getElementById("kpiB").textContent = sum(list,"boxes");
+  document.getElementById("kpiC").textContent = new Set(list.map(a=>a.customer)).size;
+  document.getElementById("kpiR").textContent = money(sum(list,"revenue"));
+  document.getElementById("dashRows").innerHTML = dashboardRows(list);
+  document.getElementById("apptRows").innerHTML = appointmentRows(appointments);
+  renderSearch();
+  renderCustomers();
+}
+
+function renderSearch(){
+  const list = getFiltered("s");
+  document.getElementById("sTotal").textContent = sum(list,"qty");
+  document.getElementById("sBoxes").textContent = sum(list,"boxes");
+  document.getElementById("sCount").textContent = list.length;
+  document.getElementById("sCust").textContent = new Set(list.map(a=>a.customer)).size;
+  document.getElementById("sRev").textContent = money(sum(list,"revenue"));
+  document.getElementById("searchRows").innerHTML = dashboardRows(list);
+}
+
+function renderCustomers(){
+  const names = [...new Set(appointments.map(a=>a.customer).filter(Boolean))];
+  document.getElementById("customerRows").innerHTML = names.map(name=>{
+    const visits = appointments.filter(a=>a.customer===name).sort((a,b)=>String(b.date).localeCompare(String(a.date)));
+    const productsUsed = [...new Set(visits.map(v=>v.product))].join(", ");
+    return `<tr><td><b>${name}</b></td><td>${visits[0]?.date||""}</td><td>${visits.length}</td><td>${productsUsed}</td><td>${money(sum(visits,"revenue"))}</td></tr>`;
+  }).join("");
+}
+
+async function loadCloudData(){
+  const status = document.getElementById("connectionStatus");
+  status.className = "status";
+  status.textContent = "Loading cloud data...";
+  const { data, error } = await supabaseClient.from("appointments").select("*").order("date",{ascending:false});
+  if(error){
+    status.className = "status error";
+    status.textContent = "Supabase error: " + error.message;
+    return;
+  }
+  appointments = data || [];
+  status.textContent = "Connected to Supabase. Cloud records loaded: " + appointments.length;
+  renderAll();
+}
+
+async function addAppointment(){
+  const record = {
+    date: document.getElementById("aDate").value,
+    customer: document.getElementById("aCustomer").value.trim(),
+    therapist: document.getElementById("aTherapist").value,
+    product: document.getElementById("aProduct").value,
+    qty: Number(document.getElementById("aQty").value || 0),
+    boxes: Number(document.getElementById("aBoxes").value || 0),
+    revenue: Number(document.getElementById("aRevenue").value || 0),
+    before_photo: document.getElementById("aBefore").value.trim(),
+    after_photo: document.getElementById("aAfter").value.trim(),
+    notes: document.getElementById("aNotes").value.trim()
+  };
+  if(!record.date || !record.customer || !record.therapist || !record.product){
+    alert("Please fill date, customer, therapist and product.");
+    return;
+  }
+  const { error } = await supabaseClient.from("appointments").insert([record]);
+  if(error){ alert("Cannot save: " + error.message); return; }
+  ["aDate","aCustomer","aQty","aBoxes","aRevenue","aBefore","aAfter","aNotes"].forEach(id=>document.getElementById(id).value="");
+  await loadCloudData();
+}
+
+async function deleteAppointment(id){
+  if(!confirm("Delete this appointment record?")) return;
+  const { error } = await supabaseClient.from("appointments").delete().eq("id", id);
+  if(error){ alert("Cannot delete: " + error.message); return; }
+  await loadCloudData();
+}
+
+function clearDash(){["dashTherapist","dashProduct","dashCustomer","dashFrom","dashTo"].forEach(id=>document.getElementById(id).value="");renderAll();}
+function clearSearch(){["sTherapist","sProduct","sCustomer","sFrom","sTo"].forEach(id=>document.getElementById(id).value="");renderSearch();}
+
+fillSelects();
+loadCloudData();
+
+supabaseClient.channel("appointments-live")
+  .on("postgres_changes",{event:"*",schema:"public",table:"appointments"},()=>loadCloudData())
+  .subscribe();
 </script>
 </body>
 </html>
